@@ -49,17 +49,17 @@ void ld_close(ld_db_t *db);
 int int_sync(ld_db_t *db);
 
 
-int ld_user_add(ld_db_t, const char *name, const char *password);
-int ld_user_del();
-int ld_user_get();
-int ld_user_list();
-int ld_user_auth();
+int ld_user_add(ld_db_t *db, const char *name, const char *password);
+int ld_user_del(ld_db_t *db, const char *name);
+int ld_user_get(ld_db_t *db, const char *name, ld_user_t *out);
+int ld_user_list(ld_db_t *db);
+int ld_user_auth(ld_db_t *db, const char *name, const char *password);
 
-int ld_group_add();
-int ld_group_del();
-int ld_group_adduser();
-int ld_group_members();
-int ld_group_list();
+int ld_group_add(ld_db_t *db, const char *name);
+int ld_group_del(ld_db_t *db, const char *group, const char *user);
+int ld_group_adduser(ld_db_t *db, const char *group, const char *user);
+int ld_group_members(ld_db_t *db, const char *group);
+int ld_group_list(ld_db_t *db);
 
 
 #endif /* STORE.H */
