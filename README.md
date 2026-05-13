@@ -13,6 +13,21 @@
 
 ---
 
+<p align="center">
+
+[![License: GPL-3.0](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+<img src="https://img.shields.io/badge/made%20by-nerdemma-blue.svg" >
+<img src="https://img.shields.io/badge/CC-11.0.1-red.svg">
+<img src="https://img.shields.io/badge/OPENBSD-7.0-green.svg">
+<img src="https://badges.frapsoft.com/os/v1/open-source.svg?v=103" >
+<img src="https://img.shields.io/github/stars/nerdemma/litedir.svg?style=flat">
+<img src="https://img.shields.io/github/languages/top/nerdemma/litedir.svg">
+<img src="https://img.shields.io/github/issues/nerdemma/litedir.svg">
+<img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat">
+</p>
+
+
+
 ## ¿Qué es LiteDir?
 
 LiteDir es un directorio de usuarios y grupos diseñado para reemplazar Active Directory en entornos donde los requisitos de Active Directory son excesivos: hardware legacy, sistemas BSD embebidos o redes pequeñas que no justifican un servidor Windows.
