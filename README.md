@@ -1,7 +1,7 @@
 # LiteDir
 
-> Alternativa ligera a Active Directory para entornos BSD.  
-> Gestión de usuarios, grupos y políticas en C puro — sin dependencias externas.
+> Lightweight alternative to Active Directory for BSD environments.  
+> User, group, and policy management in pure C — no external dependencies.
 
 ```
  _     _ _       ____  _
@@ -26,96 +26,94 @@
 <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat">
 </p>
 
+## What is LiteDir?
 
+LiteDir is a user and group directory designed to replace Active Directory in environments where Active Directory's requirements are excessive: legacy hardware, embedded BSD systems, or small networks that do not justify a Windows server.
 
-## ¿Qué es LiteDir?
-
-LiteDir es un directorio de usuarios y grupos diseñado para reemplazar Active Directory en entornos donde los requisitos de Active Directory son excesivos: hardware legacy, sistemas BSD embebidos o redes pequeñas que no justifican un servidor Windows.
-
-**No es un clon de AD.** Es una herramienta de propósito específico que resuelve el problema central: autenticar usuarios, asignarlos a grupos y aplicar políticas — con el menor footprint posible.
+**It is not an AD clone.** It is a purpose-specific tool that solves the core problem: authenticating users, assigning them to groups, and applying policies — with the smallest possible footprint.
 
 ---
 
-## Características
+## Features
 
-- **C99 puro** — sin C++, sin Rust, sin scripting
-- **Cero dependencias externas** — solo libc del sistema base
-- **Formato binario propio** — archivo `ldstore.db`, sin SQLite, sin LDAP
-- **Compilable en i386 32-bit** — hardware de hace 15+ años
-- **Footprint mínimo** — binario < 2 MB, memoria en reposo < 8 MB
-- **POSIX estricto** — compatible con FreeBSD, OpenBSD, NetBSD
-- **Seguro por diseño** — `pledge(2)` / `unveil(2)` en OpenBSD, sin root requerido para operar
+- **Pure C99** — no C++, no Rust, no scripting
+- **Zero external dependencies** — only the base system's libc
+- **Custom binary format** — `ldstore.db` file, no SQLite, no LDAP
+- **Compilable on i386 32-bit** — hardware from 15+ years ago
+- **Minimal footprint** — binary < 2 MB, memory at rest < 8 MB
+- **Strict POSIX** — compatible with FreeBSD, OpenBSD, NetBSD
+- **Secure by design** — `pledge(2)` / `unveil(2)` on OpenBSD, no root required to operate
 
 ---
 
-## Hardware de referencia
+## Reference Hardware
 
-El proyecto fue diseñado y validado sobre:
+The project was designed and validated on:
 
-| Componente | Especificación |
+| Component | Specification |
 |---|---|
 | CPU | Intel Celeron D 2.4 GHz (i386, 32-bit) |
 | RAM | 2 GB DDR |
-| Disco | 300 GB HDD |
-| Sistema | OpenBSD 7.0 — arquitectura i386 |
-| Compilador | cc (clang 11.0.1) — base system |
+| Disk | 300 GB HDD |
+| System | OpenBSD 7.0 — i386 architecture |
+| Compiler | cc (clang 11.0.1) — base system |
 
-Si corre en un Celeron D de 2004, corre en cualquier cosa.
-
----
-
-## Estado del proyecto
-
-```
-Fase 1 — ldstore (motor de datos)          ████████░░  En desarrollo
-Fase 2 — Red y protocolo LDP               ░░░░░░░░░░  Planificado
-Fase 3 — Motor de políticas                ░░░░░░░░░░  Planificado
-Fase 4 — Herramientas de administración    ░░░░░░░░░░  Planificado
-Fase 5 — Validación y hardening            ░░░░░░░░░░  Planificado
-```
+If it runs on a 2004 Celeron D, it runs on anything.
 
 ---
 
-## Inicio rápido
+## Project Status
 
-### Requisitos
+```
+Phase 1 — ldstore (data engine)          ████████░░  In development
+Phase 2 — Network and LDP protocol       ░░░░░░░░░░  Planned
+Phase 3 — Policy engine                  ░░░░░░░░░░  Planned
+Phase 4 — Administration tools           ░░░░░░░░░░  Planned
+Phase 5 — Validation and hardening       ░░░░░░░░░░  Planned
+```
 
-- OpenBSD 7.x, FreeBSD 12+, NetBSD 9+ — o cualquier POSIX con clang/gcc
-- `cc` y `make` — presentes en el base system de todos los BSDs
-- Sin `pkg_add`, sin `pkg install`, sin `apt`
+---
 
-### Compilar
+## Quick Start
+
+### Requirements
+
+- OpenBSD 7.x, FreeBSD 12+, NetBSD 9+ — or any POSIX system with clang/gcc
+- `cc` and `make` — included in the base system of all BSDs
+- No `pkg_add`, no `pkg install`, no `apt`
+
+### Compile
 
 ```sh
-git clone https://github.com/tuusuario/litedir.git
+git clone https://github.com/youruser/litedir.git
 cd litedir
 make
 ```
 
-Para compilar explícitamente en 32-bit desde una máquina amd64:
+To explicitly compile in 32-bit mode from an amd64 machine:
 
 ```sh
 make CFLAGS="-std=c99 -Wall -Wextra -m32"
 ```
 
-Verificar el binario:
+Verify the binary:
 
 ```sh
 file ldctl
 # ldctl: ELF 32-bit LSB executable, Intel 80386
 ```
 
-### Uso básico
+### Basic Usage
 
 ```sh
-# Usuarios
-./ldctl user add  alice secreto123
+# Users
+./ldctl user add  alice secret123
 ./ldctl user add  bob   pass456
 ./ldctl user list
-./ldctl user auth alice secreto123   # -> OK
+./ldctl user auth alice secret123   # -> OK
 ./ldctl user del  bob
 
-# Grupos
+# Groups
 ./ldctl group add admins
 ./ldctl group adduser admins alice
 ./ldctl group members admins
@@ -124,117 +122,117 @@ file ldctl
 
 ---
 
-## Arquitectura
+## Architecture
 
 ```
-ldstore.db (archivo binario)
+ldstore.db (binary file)
      │
-     ├── Header (32 bytes)   — magic "LDST", version, contadores
-     ├── Usuarios (× 1024)   — uid, nombre, hash bcrypt, grupos
-     └── Grupos   (× 256)    — gid, nombre, lista de miembros
+     ├── Header (32 bytes)   — magic "LDST", version, counters
+     ├── Users (× 1024)      — uid, name, bcrypt hash, groups
+     └── Groups (× 256)      — gid, name, member list
           │
-          └── db.c           — pread/pwrite POSIX, sin mmap
+          └── db.c           — POSIX pread/pwrite, no mmap
                │
-               ├── users.c   — CRUD de usuarios
-               ├── groups.c  — CRUD de grupos y membresías
+               ├── users.c   — CRUD for users
+               ├── groups.c  — CRUD for groups and memberships
                ├── auth.c    — crypt_newhash / crypt_checkpass (OpenBSD)
-               └── main.c    — ldctl CLI, parseo de argv[]
+               └── main.c    — ldctl CLI, argv[] parsing
 ```
 
-El archivo `ldstore.db` siempre se crea en el directorio de trabajo. El binario no escribe fuera de donde se ejecuta.
+The `ldstore.db` file is always created in the working directory. The binary does not write outside its execution directory.
 
 ---
 
-## Estructura del repositorio
+## Repository Structure
 
 ```
 litedir/
 ├── Makefile
 ├── include/
-│   └── store.h          — estructuras en disco y API pública
+│   └── store.h          — on-disk structures and public API
 ├── src/
-│   ├── db.c / db.h      — motor de almacenamiento
-│   ├── users.c          — gestión de usuarios
-│   ├── groups.c         — gestión de grupos
-│   ├── auth.c           — hashing y autenticación
+│   ├── db.c / db.h      — storage engine
+│   ├── users.c          — user management
+│   ├── groups.c         — group management
+│   ├── auth.c           — hashing and authentication
 │   └── main.c           — ldctl (CLI)
 ├── tests/
-│   └── test_users.c     — pruebas unitarias en C
+│   └── test_users.c     — unit tests in C
 └── docs/
-    └── litedir_fase1.pdf  — guía de inicio detallada
+    └── litedir_phase1.pdf  — detailed getting started guide
 ```
 
 ---
 
-## Correr las pruebas
+## Running Tests
 
 ```sh
 make test
-# Todos los tests pasaron.
+# All tests passed.
 ```
 
-Las pruebas son C puro usando `assert()`. Sin frameworks, sin dependencias.
+Tests are pure C using `assert()`. No frameworks, no dependencies.
 
 ---
 
-## Seguridad
+## Security
 
-- Las contraseñas se almacenan con **bcrypt** vía `crypt_newhash(3)` de OpenBSD. Nunca en texto plano ni con MD5/SHA-1.
-- El archivo `ldstore.db` se crea con permisos `0600` — solo el propietario puede leerlo.
-- En producción el daemon usará `pledge(2)` y `unveil(2)` para restringir sus syscalls al mínimo necesario (Fase 4).
-- El binario opera sin privilegios root. No usa `setuid`.
-
----
-
-## Hoja de ruta
-
-### Fase 1 — ldstore (actual)
-Motor de almacenamiento en C puro. CLI `ldctl` para gestión local de usuarios y grupos. Sin red.
-
-### Fase 2 — Red y protocolo LDP
-Servidor TCP con event loop basado en `kqueue(2)`. Protocolo binario propio (LiteDir Protocol) con mensajes TLV. TLS opcional via BearSSL embebido.
-
-### Fase 3 — Motor de políticas
-Reglas en archivos `.ini`, herencia por grupo, mapeo a permisos POSIX del sistema de archivos.
-
-### Fase 4 — Herramientas de administración
-`ldird` (daemon con rc.d), `ldisync` (replicación activo/pasivo entre nodos).
-
-### Fase 5 — Hardening
-Fuzzing con AFL++, análisis estático con `scan-build`, pruebas en hardware legacy real.
+- Passwords are stored with **bcrypt** via OpenBSD's `crypt_newhash(3)`. Never in plain text or with MD5/SHA-1.
+- The `ldstore.db` file is created with `0600` permissions — only the owner can read it.
+- In production, the daemon will use `pledge(2)` and `unveil(2)` to restrict syscalls to the bare minimum (Phase 4).
+- The binary operates without root privileges. It does not use `setuid`.
 
 ---
 
-## Diferencias con Active Directory / OpenLDAP
+## Roadmap
+
+### Phase 1 — ldstore (current)
+Pure C storage engine. `ldctl` CLI for local user and group management. No networking.
+
+### Phase 2 — Network and LDP Protocol
+TCP server with an event loop based on `kqueue(2)`. Custom binary protocol (LiteDir Protocol) with TLV messages. Optional TLS via embedded BearSSL.
+
+### Phase 3 — Policy Engine
+Rules in `.ini` files, group inheritance, mapping to POSIX file system permissions.
+
+### Phase 4 — Administration Tools
+`ldird` (daemon with rc.d), `ldisync` (active/passive replication between nodes).
+
+### Phase 5 — Hardening
+Fuzzing with AFL++, static analysis with `scan-build`, testing on real legacy hardware.
+
+---
+
+## Differences with Active Directory / OpenLDAP
 
 | | Active Directory | OpenLDAP | **LiteDir** |
 |---|---|---|---|
-| Dependencias | Cientos | Decenas | **Cero** |
-| RAM mínima | ~2 GB | ~128 MB | **< 8 MB** |
-| Arquitectura | x86_64 | x86_64 / ARM | **i386 / x86_64 / ARM** |
-| Protocolo | LDAP + Kerberos | LDAP | **LDP (binario propio)** |
-| Lenguaje | C / .NET | C | **C99 puro** |
-| BSD nativo | No | Parcial | **Sí** |
+| Dependencies | Hundreds | Dozens | **Zero** |
+| Minimum RAM | ~2 GB | ~128 MB | **< 8 MB** |
+| Architecture | x86_64 | x86_64 / ARM | **i386 / x86_64 / ARM** |
+| Protocol | LDAP + Kerberos | LDAP | **LDP (custom binary)** |
+| Language | C / .NET | C | **Pure C99** |
+| BSD Native | No | Partial | **Yes** |
 
 ---
 
-## Contribuir
+## Contributing
 
-El proyecto está en Fase 1. Las contribuciones más útiles ahora mismo son:
+The project is in Phase 1. The most useful contributions right now are:
 
-1. **Pruebas en hardware real** — especialmente i386 y ARM bajo
-2. **Portabilidad** — probar en NetBSD, DragonFlyBSD
-3. **Revisión de seguridad** — el formato del archivo y el parser de argumentos
-4. **Documentación** — man pages en formato `mandoc`
+1. **Testing on real hardware** — especially i386 and low-end ARM
+2. **Portability** — testing on NetBSD, DragonFlyBSD
+3. **Security review** — file format and argument parser
+4. **Documentation** — man pages in `mandoc` format
 
-Antes de abrir un PR, verificar que `make test` pasa y que `cc -Wall -Wextra` no emite warnings.
+Before opening a PR, ensure `make test` passes and `cc -Wall -Wextra` emits no warnings.
 
 ---
 
-## Licencia
+## License
 
 GPL V3
 
 ---
 
-<sub>Desarrollado sobre OpenBSD 7.0 · Intel Celeron D 2.4 GHz · cc (clang 11.0.1) · C99</sub>
+<sub>Developed on OpenBSD 7.0 · Intel Celeron D 2.4 GHz · cc (clang 11.0.1) · C99</sub>

@@ -2,14 +2,14 @@
 #define STORE_H
 #include<stdint.h>
 
-#define LD_MAGIC
-#define LD_VERSION
-#define LD_MAX_NAME
-#define LD_MAX_HASH
-#define LD_MAX_USERS
-#define LD_MAX_GROUPS
-#define LD_MAX_UGROUPS
-#define LD_MAX_GMEMBERS
+#define LD_MAGIC        0x4C445354u
+#define LD_VERSION      1
+#define LD_MAX_NAME     64
+#define LD_MAX_HASH     65
+#define LD_MAX_USERS    1024
+#define LD_MAX_GROUPS   256
+#define LD_MAX_UGROUPS  16
+#define LD_MAX_GMEMBERS 64
 
 #pragma pack(push, 1)
 
@@ -23,6 +23,7 @@ uint32_t next_guid;
 uint8_t reserved[10];
 } ld_header_t;
 
+
 typedef struct{
 uint32_t uid;
 char name[LD_MAX_NAME];
@@ -31,8 +32,7 @@ uint8_t active;
 uint32_t gids[LD_MAX_HASH];
 uint8_t git_count;
 uint8_t _pad[2];
-}id_user_t
-
+}ld_user_t;
 
 typedef struct{
 uint32_t gid;
