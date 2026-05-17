@@ -1,3 +1,5 @@
+#define _BSD_SOURCE 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -26,7 +28,7 @@ int main(int argc, char *argv[])
 {
 	if (pledge("stdio rpath wpath cpath", NULL) == -1)
 	{
-		perror("pledge"); return 1;
+	perror("pledge"); return 1;
 	}
 
 	if (argc < 3)
@@ -63,7 +65,7 @@ int main(int argc, char *argv[])
 		if (!strcmp(act, "add") && argc == 4)
 			ret = ld_group_add(db, argv[3]);
 		else if (!strcmp(act, "del") && argc == 4)
-			ret = ld_group_del(db, argv[3]);
+			ret = ld_group_del(db, argv[3], NULL);
 		else if (!strcmp(act, "adduser") && argc == 5)
 			ret = ld_group_adduser(db, argv[3], argv[4]);
 		else if (!strcmp(act, "members") && argc == 4)

@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "../lib/store.h"
+#include "../lib/db.h"
 
 struct ld_db
 {
@@ -14,9 +15,9 @@ ld_user_t	users[LD_MAX_USERS];
 ld_group_t	groups[LD_MAX_GROUPS];
 };
 
-ld_header *db_header(ld_db_t *db) { return &db->hdr; }
-ld_header *db_users(ld_db_t *db) { return &db->users; }
-ld_header *db_group(ld_db_t *db) { return &db->groups; }
+ld_header_t *db_header(ld_db_t *db) { return &db->hdr; }
+ld_user_t *db_users(ld_db_t *db) { return db->users; }
+ld_group_t *db_group(ld_db_t *db) { return db->groups; }
 
 static off_t user_offset(int i) { return (off_t)sizeof(ld_header_t) + (off_t)i * (off_t)sizeof(ld_user_t); }	
 static off_t group_offset(int j) { return user_offset(LD_MAX_USERS) + (off_t)j * (off_t)sizeof(ld_group_t); }

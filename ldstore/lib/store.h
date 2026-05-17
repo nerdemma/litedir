@@ -19,7 +19,7 @@ uint16_t version;
 uint32_t user_count;
 uint32_t group_count;
 uint32_t next_uid;
-uint32_t next_guid;
+uint32_t next_gid;
 uint8_t reserved[10];
 } ld_header_t;
 
@@ -30,7 +30,7 @@ char name[LD_MAX_NAME];
 char pw_hash[LD_MAX_HASH];
 uint8_t active;
 uint32_t gids[LD_MAX_HASH];
-uint8_t git_count;
+uint8_t gid_count;
 uint8_t _pad[2];
 }ld_user_t;
 

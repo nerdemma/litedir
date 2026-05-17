@@ -1,28 +1,33 @@
 CC = cc
-CFLAGS = -std=c99 -Wall -Wextra -pedantic -D_POSIX_C_SOURCE=200809L -Iinclude
+
+CFLAGS = -std=c99 -Wall -Wextra -pedantic -Iinclude
+
+CFLAGS += -D_POSIX_C_SOURCE=200809L
 
 TARGET = ldctl
 SRCS = src/main.c src/db.c src/users.c src/groups.c src/auth.c
-OBJS = ${SRCS:.c=.o}
+OBJS = $(SRCS:.c=.o)
 
-DEBUG ?= 0
-ifeq ($(DEBUG), 1)
-	CFLAGS += -g -O0
-else
-	CFLAGS += -O2
-endif
+.if defined(DEBUG)
+CFLAGS += -g -O0
+.else
+CFLAGS += -O2
+.endif
 
-$(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) -o $@ ${OBJS}
+${TARGET}: ${OBJS}
+	${CC} ${CFLAGS} -o $@ ${OBJS}
 
-%.o: %.c
-	$(CC) $(CFLAGS) -c -o $@ $<
+
+.c.o:
+	${CC} ${CFLAGS} -c -o $@ $<
 
 clean:
-	rm -f ${OBJS} ${TARGET} ldstore.db run_test
+	rm -f ${OBJS} ${TARGET} ldstore.db
+
 
 test: ${TARGET}
-	$(CC) $(CFLAGS) -o run_test test/test_users.c src/db.c src/users.c src/auth.c src/groups.c && ./run_test
+	${CC} ${CFLAGS} -Isrc -o run_tests tests/tests_users.c \
+		src/db.c src/users.c src/auth.c src/groups.c && ./run_tests
 
 size: ${TARGET}
 	size ${TARGET}
