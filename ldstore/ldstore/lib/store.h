@@ -1,6 +1,5 @@
 #ifndef STORE_H
 #define STORE_H
-
 #include<stdint.h>
 
 #define LD_MAGIC        0x4C445354u
@@ -30,7 +29,7 @@ uint32_t uid;
 char name[LD_MAX_NAME];
 char pw_hash[LD_MAX_HASH];
 uint8_t active;
-uint32_t gids[LD_MAX_UGROUPS];
+uint32_t gids[LD_MAX_HASH];
 uint8_t gid_count;
 uint8_t _pad[2];
 }ld_user_t;
@@ -39,28 +38,25 @@ typedef struct{
 uint32_t gid;
 char name[LD_MAX_NAME];
 uint32_t uids[LD_MAX_GMEMBERS];
-uint8_t uid_count;
 uint8_t _pad[3];
 } ld_group_t;
 
-#pragma pack(pop)
+# pragma pack(pop)
 
 typedef struct ld_db ld_db_t;
+ld_db_t *ld_open(const char *path);
+void ld_close(ld_db_t *db);
+int int_sync(ld_db_t *db);
 
 
-
-/* api users */
 int ld_user_add(ld_db_t *db, const char *name, const char *password);
 int ld_user_del(ld_db_t *db, const char *name);
 int ld_user_get(ld_db_t *db, const char *name, ld_user_t *out);
 int ld_user_list(ld_db_t *db);
 int ld_user_auth(ld_db_t *db, const char *name, const char *password);
-int find_user_idx(ld_db_t *db, const char *name); /*groups.c*/
 
-
-/*api groups*/
 int ld_group_add(ld_db_t *db, const char *name);
-int ld_group_del(ld_db_t *db, const char *name);
+int ld_group_del(ld_db_t *db, const char *group, const char *user);
 int ld_group_adduser(ld_db_t *db, const char *group, const char *user);
 int ld_group_members(ld_db_t *db, const char *group);
 int ld_group_list(ld_db_t *db);

@@ -1,12 +1,14 @@
-CC = cc
+# LiteDir Makefile for OpenBSD 7.0 / bmake
 
-CFLAGS = -std=c99 -Wall -Wextra -pedantic -Iinclude
+CC      = cc
+CFLAGS  = -std=c99 -Wall -Wextra -pedantic
+CFLAGS += -Ilib
+CFLAGS += -D_BSD_SOURCE
+LDFLAGS =
 
-CFLAGS += -D_POSIX_C_SOURCE=200809L
-
-TARGET = ldctl
-SRCS = src/main.c src/db.c src/users.c src/groups.c src/auth.c
-OBJS = $(SRCS:.c=.o)
+TARGET  = ldctl
+SRCS    = src/main.c src/db.c src/users.c src/groups.c src/auth.c
+OBJS    = $(SRCS:.c=.o)
 
 .if defined(DEBUG)
 CFLAGS += -g -O0
@@ -15,8 +17,7 @@ CFLAGS += -O2
 .endif
 
 ${TARGET}: ${OBJS}
-	${CC} ${CFLAGS} -o $@ ${OBJS}
-
+	${CC} ${CFLAGS} -o $@ ${OBJS} ${LDFLAGS}
 
 .c.o:
 	${CC} ${CFLAGS} -c -o $@ $<
@@ -24,10 +25,11 @@ ${TARGET}: ${OBJS}
 clean:
 	rm -f ${OBJS} ${TARGET} ldstore.db
 
-
 test: ${TARGET}
-	${CC} ${CFLAGS} -Isrc -o run_tests tests/tests_users.c \
-		src/db.c src/users.c src/auth.c src/groups.c && ./run_tests
+	${CC} ${CFLAGS} -o run_tests tests/tests_users.c \
+		src/db.c src/users.c src/auth.c src/groups.c ${LDFLAGS} \
+		&& ./run_tests
+	rm -f run_tests ldstore.db
 
 size: ${TARGET}
 	size ${TARGET}
